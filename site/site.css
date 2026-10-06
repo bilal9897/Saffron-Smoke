@@ -1,0 +1,1401 @@
+/* Saffron & Smoke: brand styles (site/DESIGN.md). Desktop only, designed at 1440×900: no breakpoints.
+   Reel text ≈ 40 px (prices 48 px); 13–18 px mono only for meta nobody needs to read on camera (LESSON 60).
+   Component classes live in @layer components so Tailwind utilities still win (LESSON 46). */
+
+:root {
+  --ember: #e2552b;
+  --bone: #eee7da;
+  --paper: #ede5d6;
+  --ink: #121110;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-io: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* the S11 sheet tilts push a tall pinned section's corner sideways: clip it (clip, unlike hidden, keeps sticky pins) */
+html,
+body {
+  overflow-x: clip;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body-family), monospace;
+}
+
+@layer components {
+  /* ── shared ─────────────────────────────────────────────── */
+  .ss-meta {
+    font-family: var(--font-body-family), monospace;
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ss-meta > span {
+    color: var(--accent);
+    margin-right: 0.6em;
+  }
+  .ss-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    height: 56px;
+    padding: 0 28px;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-family: var(--font-body-family), monospace;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 0;
+    cursor: pointer;
+    transition: background-color 0.3s var(--ease-out);
+  }
+  .ss-btn:hover {
+    background: #ffc93f;
+  }
+  .ss-btn:disabled {
+    background: transparent;
+    color: var(--muted);
+    box-shadow: inset 0 0 0 1px var(--line);
+    cursor: default;
+  }
+  h1,
+  h2 {
+    font-family: var(--font-display-family), serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  em {
+    font-style: italic;
+  }
+
+  /* pinned stages (FilmPin-style): the section is tall, the stage sticks */
+  .pin-outer {
+    position: relative;
+  }
+  .pin-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  /* S11 overlapping sheets: each section is a menu sheet laid over the last (soft charcoal shadow, hairline edge).
+     Round 3 adds the 0.5–1° tilt that settles flat as each sheet lands. */
+  .sheet {
+    position: relative;
+    background: var(--bg);
+    box-shadow:
+      0 -1px 0 var(--line),
+      0 -30px 60px -20px rgba(0, 0, 0, 0.75);
+  }
+  .ss-page > .sheet:nth-child(2) { z-index: 2; }
+  .ss-page > .sheet:nth-child(3) { z-index: 3; }
+  .ss-page > .sheet:nth-child(4) { z-index: 4; }
+  .ss-page > .sheet:nth-child(5) { z-index: 5; }
+  .ss-page > .sheet:nth-child(6) { z-index: 6; }
+  .ft.sheet { z-index: 7; }
+  .sheet-paper {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  /* ── loader (I30) ───────────────────────────────────────── */
+  .ember-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: var(--bg);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .ember-words {
+    display: flex;
+    gap: 0.9em;
+    font-family: var(--font-body-family), monospace;
+    font-size: 40px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  .ember-word {
+    opacity: 0;
+    color: var(--bone);
+    animation: ember-strike 0.9s steps(1, end) forwards, ember-flicker 1.7s ease-in-out 0.9s infinite, ember-glow 2.6s ease-in-out infinite;
+  }
+  /* a broad ember glow that drifts and breathes from the first painted frame: big enough to register on camera */
+  .ember-heat {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1100px;
+    height: 560px;
+    margin: -280px 0 0 -550px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(226, 85, 43, 0.34), rgba(244, 180, 26, 0.1) 55%, rgba(18, 17, 16, 0) 100%);
+    /* starts mid-swing (negative delay), so it is already moving fast on the first painted frame */
+    animation: ember-heat 1.6s linear -0.8s infinite alternate;
+  }
+  @keyframes ember-heat {
+    0% { transform: translate(-160px, 40px) scale(0.7); opacity: 0.45; }
+    100% { transform: translate(160px, -40px) scale(1.15); opacity: 1; }
+  }
+  @keyframes ember-flicker {
+    0%, 100% { opacity: 1; }
+    35% { opacity: 0.72; }
+    50% { opacity: 0.95; }
+    70% { opacity: 0.8; }
+  }
+  .ember-word:last-child {
+    color: var(--accent);
+  }
+  /* a struck match: two quick flickers, then it holds lit (CSS from the first paint, LESSON 11) */
+  @keyframes ember-strike {
+    0% { opacity: 0; }
+    12% { opacity: 0.9; }
+    20% { opacity: 0.15; }
+    32% { opacity: 1; }
+    40% { opacity: 0.45; }
+    55%, 100% { opacity: 1; }
+  }
+  @keyframes ember-glow {
+    0%, 100% { text-shadow: 0 0 18px rgba(244, 180, 26, 0.25); }
+    50% { text-shadow: 0 0 34px rgba(226, 85, 43, 0.45); }
+  }
+  .ember-curtain {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .ember-curtain path {
+    fill: var(--accent);
+  }
+
+  /* ── firelight: the whole page is lit by a candle that never holds still ──
+     A very low-alpha warm light over everything, its strength wavering on an irregular linear loop (no flat
+     stretch, so it is never still at the checker's 160×90 scale: LESSONS 8, 35, 55). Pure CSS: it moves from the
+     first painted frame. Never scales or shifts anything underneath. */
+  .firelight {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    pointer-events: none;
+    mix-blend-mode: screen; /* only ever adds light: it can never dim the food */
+    background:
+      radial-gradient(70% 80% at 50% 62%, rgba(226, 85, 43, 0.1), rgba(226, 85, 43, 0) 75%),
+      linear-gradient(rgba(244, 140, 40, 0.036), rgba(244, 140, 40, 0.036));
+    animation: firelight 2.3s linear infinite;
+  }
+  @keyframes firelight {
+    0% { opacity: 0.35; }
+    13% { opacity: 0.85; }
+    27% { opacity: 0.5; }
+    41% { opacity: 1; }
+    55% { opacity: 0.55; }
+    70% { opacity: 0.92; }
+    84% { opacity: 0.42; }
+    100% { opacity: 0.35; }
+  }
+  html.is-static .firelight {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  /* ── nav: wordmark + Reserve pill + course rail (NV10) ───── */
+  .ss-bar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 80px 0 64px;
+    pointer-events: none;
+  }
+  .ss-bar a {
+    pointer-events: auto;
+  }
+  .ss-wordmark {
+    font-family: var(--font-display-family), serif;
+    font-size: 28px;
+    color: var(--bone);
+    letter-spacing: -0.01em;
+  }
+  .ss-wordmark i {
+    color: var(--accent);
+  }
+  .ss-pill {
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 22px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .ss-rail {
+    position: fixed;
+    right: 26px;
+    top: 50%;
+    z-index: 50;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .ss-rail-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    height: 220px;
+    overflow: hidden;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone);
+    text-align: center;
+    mix-blend-mode: difference;
+  }
+  .ss-rail-num {
+    color: var(--accent);
+  }
+  .ss-rail-ticks {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(238, 231, 218, 0.22);
+  }
+  .ss-rail-ticks a {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: rgba(238, 231, 218, 0.55);
+    transition: color 0.4s var(--ease-out);
+  }
+  .ss-rail-ticks li.is-past a { color: rgba(238, 231, 218, 0.7); }
+  .ss-rail-ticks li.is-on a { color: var(--accent); }
+  /* over the bone paper band (Pairing) the bar and rail switch to ink */
+  .on-paper .ss-wordmark,
+  .on-paper .ss-rail-label { color: var(--ink); mix-blend-mode: normal; }
+  .on-paper .ss-wordmark i,
+  .on-paper .ss-rail-num,
+  .on-paper .ss-rail-ticks li.is-on a { color: #8a5600; }
+  .on-paper .ss-rail-ticks { border-left-color: rgba(18, 17, 16, 0.25); }
+  .on-paper .ss-rail-ticks a { color: rgba(18, 17, 16, 0.62); }
+  .on-paper .ss-rail-ticks li.is-past a { color: rgba(18, 17, 16, 0.65); }
+  .ss-wordmark, .ss-rail-label, .ss-rail-ticks, .ss-rail-ticks a { transition: color 0.4s var(--ease-out), border-color 0.4s var(--ease-out); }
+
+  /* ── hero (HR19) ─────────────────────────────────────────── */
+  .hero .pin-stage {
+    background: var(--bg);
+  }
+  .hero-pool {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(70% 55% at 0% 100%, rgba(18, 17, 16, 0.92) 0%, rgba(18, 17, 16, 0.55) 45%, rgba(18, 17, 16, 0) 75%),
+      radial-gradient(38% 40% at 0% 8%, rgba(18, 17, 16, 0.7), rgba(18, 17, 16, 0) 80%),
+      linear-gradient(180deg, rgba(18, 17, 16, 0) 62%, rgba(18, 17, 16, 0.7) 100%);
+  }
+  .hero-ticket {
+    position: absolute;
+    left: 64px;
+    top: 112px;
+    width: 300px;
+    padding: 18px 22px 20px;
+    border: 1px solid rgba(238, 231, 218, 0.28);
+    background: rgba(18, 17, 16, 0.55);
+  }
+  .hero-ticket-head {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed rgba(238, 231, 218, 0.3);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .hero-ticket li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 36px;
+    line-height: 1.3;
+    color: rgba(238, 231, 218, 0.5);
+  }
+  .hero-ticket li.is-done {
+    color: var(--bone);
+  }
+  .hero-tick {
+    width: 28px;
+    height: 28px;
+    flex: none;
+    border: 1px solid rgba(238, 231, 218, 0.4);
+    display: grid;
+    place-items: center;
+  }
+  .hero-tick svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    opacity: 0;
+  }
+  .hero-ticket li.is-done .hero-tick svg {
+    opacity: 1;
+  }
+  /* beside the ticket, on the film's dark top band (the shank bone owns the top right) */
+  .hero-caption {
+    position: absolute;
+    left: 404px;
+    top: 118px;
+    max-width: 380px;
+    font-family: var(--font-display-family), serif;
+    font-style: italic;
+    font-size: 40px;
+    line-height: 1.15;
+    color: var(--bone);
+    text-shadow: 0 2px 24px rgba(18, 17, 16, 0.85);
+    text-wrap: balance;
+  }
+  .hero-bottom {
+    position: absolute;
+    inset: auto 120px 48px 64px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .hero-kicker {
+    font-family: var(--font-display-family), serif;
+    font-style: italic;
+    font-size: 40px;
+    color: var(--bone);
+    margin-bottom: 6px;
+  }
+  .hero-title {
+    font-size: 148px;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+  }
+  .hero-line {
+    position: relative;
+    display: block;
+    white-space: nowrap;
+  }
+  /* two layers: the bone outline and the saffron fill clipped by --fill (Round 2 floods it with the pour) */
+  .hero-outline {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--bone);
+  }
+  .hero-fill {
+    position: absolute;
+    inset: 0;
+    color: var(--accent);
+    clip-path: inset(calc((1 - var(--fill, 1)) * 100%) 0 0 0);
+  }
+  .hero-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    padding-bottom: 14px;
+    text-align: right;
+  }
+  .hero-priceline {
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .hero-price {
+    font-family: var(--font-display-family), serif;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--bone);
+    margin-bottom: 10px;
+  }
+  .hero-price > span:not(.hero-price-num) {
+    font-family: var(--font-body-family), monospace;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── tasting journey (MN02 · signature) ──────────────────── */
+  .tj-stage {
+    display: grid;
+    grid-template-columns: 560px 1fr;
+    align-items: center;
+    gap: 40px;
+    padding: 96px 120px 48px 64px;
+    background:
+      radial-gradient(60% 70% at 72% 52%, rgba(226, 85, 43, 0.08), rgba(18, 17, 16, 0) 70%),
+      var(--bg);
+  }
+  .tj-menu {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 28px;
+  }
+  .tj-list {
+    border-top: 1px solid var(--line);
+  }
+  .tj-list li {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    column-gap: 8px;
+    padding: 18px 0 16px;
+    border-bottom: 1px solid var(--line);
+    color: rgba(238, 231, 218, 0.38);
+    transition: color 0.5s var(--ease-out);
+  }
+  .tj-list li.is-past {
+    color: rgba(238, 231, 218, 0.62);
+  }
+  .tj-list li.is-on {
+    color: var(--bone);
+  }
+  .tj-num {
+    grid-row: span 2;
+    padding-top: 10px;
+    font-size: 16px;
+    letter-spacing: 0.12em;
+  }
+  .tj-list li.is-on .tj-num {
+    color: var(--accent);
+  }
+  .tj-name {
+    font-family: var(--font-display-family), serif;
+    font-size: 40px;
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+  }
+  .tj-pair {
+    margin-top: 4px;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .tj-list li.is-on .tj-pair {
+    color: var(--accent);
+  }
+  .tj-next .tj-name {
+    font-style: italic;
+    font-size: 32px;
+  }
+  .tj-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .tj-price-num {
+    font-family: var(--font-display-family), serif;
+    font-size: 48px;
+    color: var(--bone);
+  }
+  .tj-table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .tj-plate {
+    position: relative;
+    width: min(680px, calc(100svh - 190px));
+    aspect-ratio: 1;
+    box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.8);
+  }
+  /* the pair is stacked in ONE box with ONE crop: never scale or shift raw and cooked differently */
+  .tj-course {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-out);
+  }
+  .tj-course.is-on {
+    opacity: 1;
+  }
+  .tj-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tj-burn {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0; /* lib/gl shows it after its first frame: the cooked <img> is the fallback */
+    transition: opacity 0.4s linear;
+  }
+  .tj-table {
+    position: relative;
+  }
+  .tj-glow {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 900px;
+    height: 900px;
+    margin: -450px 0 0 -450px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(closest-side, rgba(226, 85, 43, 0.22), rgba(226, 85, 43, 0) 70%);
+    animation: tj-glow 2.4s ease-in-out infinite alternate;
+  }
+  @keyframes tj-glow {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    100% { transform: scale(1.06); opacity: 1; }
+  }
+
+  /* ── tandoor fire (ST11) ─────────────────────────────────── */
+  .fire .pin-stage {
+    background: var(--bg);
+  }
+  .fire-overlay {
+    position: absolute;
+    inset: 0;
+  }
+  /* the label rides the colour edge drawn in the film canvas (M441) and fades out as the colour reaches the top */
+  .fire-heat {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc((1 - var(--heat, 1)) * 100%);
+    height: 0;
+    pointer-events: none;
+    opacity: calc((1 - var(--heat, 1)) * 6);
+  }
+  .fire-heat-num {
+    position: absolute;
+    right: 140px;
+    bottom: 10px;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+  }
+  .fire-pool {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(18, 17, 16, 0.92) 0%, rgba(18, 17, 16, 0.6) 30%, rgba(18, 17, 16, 0) 52%),
+      linear-gradient(0deg, rgba(18, 17, 16, 0.85) 0%, rgba(18, 17, 16, 0) 28%);
+  }
+  .fire-copy {
+    position: absolute;
+    left: 64px;
+    top: 50%;
+    transform: translateY(-58%);
+    width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .fire-title {
+    font-size: 104px;
+    line-height: 1;
+    color: var(--bone);
+  }
+  .fire-title em {
+    color: var(--accent);
+  }
+  .fire-text {
+    font-size: 17px;
+    line-height: 1.6;
+    color: rgba(238, 231, 218, 0.78);
+    max-width: 420px;
+    text-wrap: pretty;
+  }
+  .fire-stats {
+    position: absolute;
+    right: 120px;
+    bottom: 56px;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: 0;
+    border-top: 1px solid rgba(238, 231, 218, 0.35);
+  }
+  .fire-stats > div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+    padding: 18px 34px 0 0;
+  }
+  .fire-stats > div + div {
+    padding-left: 34px;
+    border-left: 1px solid rgba(238, 231, 218, 0.2);
+  }
+  .fire-stats dd {
+    font-family: var(--font-display-family), serif;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--bone);
+  }
+  .fire-stats dt {
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(238, 231, 218, 0.7);
+  }
+
+  .flipnum {
+    display: inline-flex;
+    align-items: baseline;
+  }
+  .flipnum-mask {
+    position: relative;
+    display: inline-block;
+    height: 1em;
+    /* clip top/bottom only: a wider digit may spill sideways for a frame while rolling */
+    clip-path: inset(0 -0.4em);
+    perspective: 400px;
+    line-height: 1;
+  }
+  .flipnum-size {
+    visibility: hidden;
+  }
+  .flipnum-strip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+  .flipnum-strip > span {
+    height: 1em;
+    line-height: 1;
+  }
+
+  /* ── signature dish (FT15) ───────────────────────────────── */
+  .shank {
+    min-height: 100svh;
+    padding: 104px 120px 64px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .shank-head {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: baseline;
+    gap: 24px;
+  }
+  .shank-title {
+    font-size: 88px;
+    line-height: 1;
+    text-align: center;
+    color: var(--bone);
+  }
+  .shank-sub {
+    justify-self: end;
+    font-family: var(--font-display-family), serif;
+    font-style: italic;
+    font-size: 32px;
+    color: var(--accent);
+  }
+  .shank-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 480px 1fr;
+    gap: 48px;
+    align-items: stretch;
+  }
+  .shank-notes {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    border-top: 1px solid var(--line);
+  }
+  .shank-notes:last-child {
+    text-align: right;
+  }
+  .shank-note {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+    color: rgba(238, 231, 218, 0.4);
+    transition: color 0.5s var(--ease-out);
+  }
+  .shank-note.is-lit {
+    color: var(--bone);
+  }
+  .shank-n {
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+  }
+  .shank-note-title {
+    font-family: var(--font-display-family), serif;
+    font-size: 40px;
+    line-height: 1.08;
+  }
+  .shank-note-text {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .shank-pic {
+    position: relative;
+    overflow: hidden;
+    min-height: 600px;
+  }
+  .shank-pic img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 64% 50%;
+    animation: slow-push 7s ease-in-out infinite alternate;
+  }
+  @keyframes slow-push {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.07) translateY(-1.2%); }
+  }
+  /* M197 as ADDED light only: a warm candle glow (screen blend) travels over the dish; nothing is ever darkened, so
+     at rest the picture is as bright as the source still. --la = how strong the glow is (0 = none). */
+  .shank-light {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: var(--la, 0);
+    background: radial-gradient(circle at var(--lx, 50%) var(--ly, 50%), rgba(255, 196, 92, 0.55) 0%, rgba(244, 150, 40, 0.28) calc(var(--lr, 22%) * 0.55), rgba(226, 85, 43, 0) var(--lr, 22%));
+  }
+
+
+  /* ── pairing (MN01 · bone paper band) ────────────────────── */
+  .pr {
+    padding: 96px 120px 80px 64px;
+  }
+  .pr .ss-meta {
+    color: #6b645b;
+  }
+  .pr .ss-meta > span {
+    color: #8a5600;
+  }
+  .pr-grid {
+    display: grid;
+    grid-template-columns: 1fr 560px;
+    gap: 72px;
+    align-items: center;
+  }
+  .pr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .pr-title {
+    font-size: 88px;
+    line-height: 1;
+  }
+  .pr-rows {
+    border-top: 1px solid rgba(18, 17, 16, 0.2);
+  }
+  .pr-rows li {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(18, 17, 16, 0.12);
+    font-family: var(--font-display-family), serif;
+    font-size: 40px;
+    line-height: 1.1;
+  }
+  .pr-drink {
+    font-style: italic;
+  }
+  .pr-leader {
+    flex: 1;
+    height: 6px;
+    overflow: visible;
+  }
+  .pr-leader-mask {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 10;
+  }
+  .pr-leader-dots {
+    fill: none;
+    stroke: rgba(18, 17, 16, 0.55);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 0.1 9;
+    vector-effect: non-scaling-stroke;
+  }
+  .pr-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .pr-options p {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 20px;
+    border: 1px solid rgba(18, 17, 16, 0.25);
+  }
+  .pr-opt {
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6b645b;
+  }
+  .pr-price {
+    font-family: var(--font-display-family), serif;
+    font-size: 48px;
+    line-height: 1;
+  }
+  .pr-note {
+    font-size: 16px;
+    color: #5b554c;
+  }
+  .pr-pic {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    width: 560px;
+    max-height: calc(100svh - 150px);
+    overflow: hidden;
+    box-shadow: 0 30px 60px -30px rgba(18, 17, 16, 0.6);
+  }
+  .pr-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: pr-push 2.6s linear infinite alternate;
+  }
+  /* the paper band gets almost nothing from the screen-blend firelight, so its photo carries the life on camera */
+  @keyframes pr-push {
+    0% { transform: scale(1) translateY(0); }
+    100% { transform: scale(1.1) translateY(-2%); }
+  }
+
+  /* ── reservations (BK05) ─────────────────────────────────── */
+  .bk {
+    min-height: 100svh;
+    padding: 112px 120px 72px 64px;
+    display: flex;
+    align-items: center;
+  }
+  .bk-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 680px;
+    gap: 72px;
+    align-items: center;
+  }
+  .bk-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .bk-title {
+    font-size: 120px;
+    line-height: 0.98;
+    color: var(--bone);
+  }
+  .bk-title em {
+    color: var(--accent);
+  }
+  .bk-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .bk-rating {
+    font-family: var(--font-display-family), serif;
+    font-size: 40px;
+    color: var(--bone);
+  }
+  .bk-card {
+    padding: 28px 32px 32px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .bk-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bk-days {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  .bk-day,
+  .bk-time {
+    border: 1px solid var(--line);
+    color: var(--bone);
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease-out),
+      border-color 0.25s var(--ease-out);
+  }
+  .bk-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 12px 0 10px;
+  }
+  .bk-day span {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .bk-day b {
+    font-family: var(--font-display-family), serif;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1;
+  }
+  .bk-day:hover,
+  .bk-time:hover {
+    border-color: var(--accent);
+  }
+  .bk-day.is-on,
+  .bk-time.is-on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-text);
+  }
+  .bk-day.is-on span {
+    color: var(--accent-text);
+  }
+  .bk-label {
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .bk-stepper {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+  .bk-stepper button {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
+    color: var(--bone);
+    font-size: 22px;
+    cursor: pointer;
+  }
+  .bk-stepper button:hover {
+    border-color: var(--accent);
+  }
+  .bk-stepper b {
+    min-width: 1ch;
+    font-family: var(--font-display-family), serif;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1;
+    text-align: center;
+  }
+  .bk-times {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .bk-time {
+    padding: 12px 0;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+  }
+  .bk-ticket {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px dashed rgba(238, 231, 218, 0.3);
+  }
+  .bk-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    color: var(--bone);
+  }
+  .bk-flip {
+    white-space: nowrap; /* each part (with its trailing "·") stays on one line */
+  }
+  .bk-ticket.is-held .bk-summary {
+    color: var(--accent);
+  }
+  .bk-hold {
+    flex: none;
+    white-space: nowrap;
+  }
+  .bk-grid {
+    position: relative;
+  }
+  .bk-grid::before {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: 50%;
+    width: 820px;
+    height: 640px;
+    margin-top: -320px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(closest-side, rgba(226, 85, 43, 0.3), rgba(226, 85, 43, 0) 70%);
+    animation: bk-glow 1.6s linear infinite alternate;
+  }
+  .bk-card {
+    position: relative;
+  }
+
+  /* ── footer (FO14) ───────────────────────────────────────── */
+  .ft {
+    min-height: 100svh;
+    display: flex;
+  }
+  .ft-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 560px 1fr;
+  }
+  .ft-pic {
+    position: relative;
+    overflow: hidden;
+  }
+  .ft-pic img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+    animation: slow-push 6s ease-in-out infinite alternate;
+  }
+  .ft-glow {
+    position: absolute;
+    inset: 0 -20%; /* wider than the picture: its sideways drift never shows an edge */
+    pointer-events: none;
+    animation: ft-glow 1.6s linear infinite alternate;
+    background:
+      linear-gradient(180deg, rgba(18, 17, 16, 0.6) 0%, rgba(18, 17, 16, 0) 16%),
+      radial-gradient(60% 45% at 50% 30%, rgba(226, 85, 43, 0.38), rgba(226, 85, 43, 0) 70%),
+      linear-gradient(180deg, rgba(18, 17, 16, 0) 45%, rgba(18, 17, 16, 0.92) 100%);
+  }
+  .ft-info {
+    padding: 120px 120px 48px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .ft-title {
+    font-size: 104px;
+    line-height: 1;
+    color: var(--bone);
+  }
+  .ft-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .ft-cols .ss-meta {
+    margin-bottom: 12px;
+  }
+  .ft-line {
+    font-family: var(--font-display-family), serif;
+    font-size: 32px;
+    line-height: 1.25;
+    color: var(--bone);
+  }
+  .ft-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ft-links {
+    display: flex;
+    gap: 28px;
+  }
+  .ft-link {
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: linear-gradient(var(--accent), var(--accent)) left bottom / 0 1px no-repeat;
+    padding-bottom: 4px;
+    transition: background-size 0.4s var(--ease-out), color 0.4s var(--ease-out);
+  }
+  .ft-link:hover {
+    color: var(--bone);
+    background-size: 100% 1px;
+  }
+  .ft-note {
+    margin-top: auto;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .ft-end {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  @keyframes ft-glow {
+    0% { transform: translateX(-14%); opacity: 0.65; }
+    100% { transform: translateX(14%); opacity: 1; }
+  }
+  @keyframes bk-glow {
+    0% { transform: translateX(-60px) scale(0.85); opacity: 0.5; }
+    100% { transform: translateX(60px) scale(1.1); opacity: 1; }
+  }
+
+  .hero-price-num,
+  .tj-price-num,
+  .pr-price {
+    display: inline-block;
+    backface-visibility: hidden;
+  }
+  .hero-price,
+  .tj-price,
+  .pr-options p {
+    perspective: 500px;
+  }
+
+  /* ── hand-overs (Handovers.tsx) ──────────────────────────── */
+  .handovers > div {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+  }
+  .ho-smoke {
+    z-index: 60;
+    background-size: cover;
+    background-position: center;
+    inset: -20% 0 !important;
+  }
+  .ho-black {
+    z-index: 61;
+    background: #0b0a09;
+    overflow: hidden;
+  }
+  .ho-ember {
+    position: absolute;
+    bottom: -10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffd27a 0%, #e2552b 55%, rgba(226, 85, 43, 0) 75%);
+    box-shadow: 0 0 14px 4px rgba(226, 85, 43, 0.45);
+    animation: ho-ember 2.4s linear infinite;
+  }
+  .ho-ember:nth-child(3n) { width: 4px; height: 4px; animation-duration: 3s; }
+  .ho-ember:nth-child(4n) { width: 8px; height: 8px; animation-duration: 2s; }
+  @keyframes ho-ember {
+    0% { transform: translate(0, 0); opacity: 0; }
+    15% { opacity: 1; }
+    100% { transform: translate(40px, -105vh); opacity: 0; }
+  }
+  .ho-vignette {
+    z-index: 61;
+    background: radial-gradient(ellipse 60% 62% at 50% 52%, rgba(11, 10, 9, 0) 30%, rgba(11, 10, 9, 0.88) 100%);
+  }
+
+  /* X3: the booking sheet's curled top-left corner (drawn by Handovers.tsx, flat when landed) */
+  .bk {
+    position: relative;
+  }
+  .bk-curl {
+    position: absolute;
+    left: 0;
+    top: -119px;
+    width: 100%;
+    height: 120px;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .bk-curl path {
+    fill: var(--bg);
+  }
+  .bk-curl .bk-curl-lip {
+    fill: none;
+    stroke: rgba(238, 231, 218, 0.28);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* M266: each changed ticket segment flips down into place like a flip-clock card */
+  .bk-summary {
+    perspective: 400px;
+  }
+  .bk-flip,
+  .bk-flipnum {
+    display: inline-block;
+    transform-origin: 50% 0%;
+    animation: bk-flip 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes bk-flip {
+    0% { transform: rotateX(-90deg); opacity: 0.2; }
+    100% { transform: rotateX(0deg); opacity: 1; }
+  }
+  .bk-ticket {
+    position: relative;
+  }
+  /* stamped across the top-left corner of the "Table held" button: covers no text */
+  .bk-stamp {
+    position: absolute;
+    right: 128px;
+    top: 0;
+    padding: 4px 10px;
+    border: 2px solid var(--accent);
+    background: var(--surface);
+    color: var(--accent);
+    font-size: 16px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transform: rotate(-8deg);
+    animation: bk-stamp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    pointer-events: none;
+  }
+  @keyframes bk-stamp {
+    0% { transform: rotate(-8deg) scale(1.5); opacity: 0; }
+    60% { opacity: 1; }
+    100% { transform: rotate(-8deg) scale(1); opacity: 0.9; }
+  }
+
+  /* M128 drum: two faces on one spot; GSAP rolls them */
+  .ss-rail-drum {
+    display: grid;
+    perspective: 300px;
+  }
+  .ss-drum-face {
+    grid-area: 1 / 1;
+    backface-visibility: hidden;
+  }
+  .ss-drum-old {
+    opacity: 0;
+  }
+  .ss-rail-ticks li {
+    transform-origin: 0% 50%;
+  }
+
+  /* magnetic Reserve pill: a bone fill wipes across on hover (and once by itself in ?record=1) */
+  .ss-pill {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .ss-pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--bone);
+    transform: translateX(-101%);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ss-pill:hover::before,
+  .ss-pill.is-wipe::before {
+    transform: translateX(0);
+  }
+  /* wordmark: a hairline underline draws on hover (no weight or spacing change: LESSON 37) */
+  .ss-wordmark {
+    background: linear-gradient(var(--accent), var(--accent)) left 100% / 0 1px no-repeat;
+    padding-bottom: 3px;
+    transition: background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.4s;
+  }
+  .ss-wordmark:hover {
+    background-size: 100% 1px;
+  }
+
+  /* M222 footer wordmark (SVG text) */
+  .ft-wm {
+    position: absolute;
+    left: 36px;
+    bottom: 26px;
+    width: 470px;
+    height: 94px;
+    overflow: visible;
+  }
+  .ft-wm text {
+    font-family: var(--font-display-family), serif;
+    font-size: 64px;
+    letter-spacing: -0.02em;
+  }
+  .ft-wm-fill {
+    fill: var(--bone);
+  }
+  .ft-wm-outline {
+    fill: none;
+    stroke: var(--bone);
+    stroke-width: 1.2;
+    stroke-dasharray: 420;
+    stroke-dashoffset: 0;
+  }
+
+  /* ── ?static=1: no pins, every section in its final state ── */
+  html.is-static .pin-outer {
+    height: auto !important;
+  }
+  html.is-static .pin-stage {
+    position: relative;
+  }
+  html.is-static .ember-word {
+    animation: none;
+    opacity: 1;
+  }
+  html.is-static .bk-flip,
+  html.is-static .bk-flipnum,
+  html.is-static .bk-stamp,
+  html.is-static .ho-ember,
+  html.is-static .ember-heat,
+  html.is-static .tj-glow,
+  html.is-static .shank-pic img,
+  html.is-static .pr-pic img,
+  html.is-static .bk-grid::before,
+  html.is-static .ft-pic img,
+  html.is-static .ft-glow {
+    animation: none;
+  }
+}
