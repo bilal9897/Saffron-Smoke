@@ -1,123 +1,175 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, prefersReducedMotion, ScrollTrigger } from "@/lib/gsap";
+import { gsap, prefersReducedMotion } from "@/lib/gsap";
 import { shank } from "../content";
-
-/**
- * FT15 + M197 (candle-light, ADDED light only). The dish stays as bright as its source still at all times; a warm
- * candle glow (screen blend, never a dark overlay) travels over the four details and each numbered note lights as the
- * glow reaches its spot. Scroll-driven over the section's travel: all four notes are lit by 40 % (≈ as the section
- * arrives; the record hold sits near 50 %), then by 48 % the glow has widened into a gentle warm lift and it fades
- * back to the plain picture by 75 %. Reversible both ways. The photo keeps a slow push-in. dish-pushin.mp4 is not in raw/ yet: the
- * picture is the hero's end still. ?static=1: notes lit, no glow.
- */
-const SPOTS: [number, number][] = [
-  [52, 30], // 01 shank
-  [40, 70], // 02 jus
-  [62, 62], // 03 rice
-  [68, 14], // 04 smoke
-];
-/** scroll progress at which each note is lit: all four inside the first 40 % */
-const LIT_AT = [0.1, 0.18, 0.26, 0.34];
 
 export default function ShankDetail() {
   const root = useRef<HTMLElement>(null);
-  const left = shank.notes.slice(0, 2);
-  const right = shank.notes.slice(2);
 
   useEffect(() => {
-    const el = root.current!;
-    const notes = el.querySelectorAll<HTMLElement>(".shank-note");
-    const pic = el.querySelector<HTMLElement>(".shank-pic")!;
-    if (prefersReducedMotion()) return;
-
-    const light = { x: 30, y: 20, r: 0, a: 0 };
-    const paint = () => {
-      pic.style.setProperty("--lx", `${light.x}%`);
-      pic.style.setProperty("--ly", `${light.y}%`);
-      pic.style.setProperty("--lr", `${light.r}%`);
-      pic.style.setProperty("--la", light.a.toFixed(3));
-    };
-    // one timeline, 0..1 = the section's scroll travel (top enters the bottom → bottom leaves the top)
-    const tl = gsap.timeline({ paused: true, defaults: { ease: "none" }, onUpdate: paint });
-    tl.set(light, { x: 30, y: 20, r: 0, a: 0 }, 0);
-    tl.to(light, { r: 26, a: 1, duration: 0.06 }, 0.02);
-    SPOTS.forEach(([x, y], i) => {
-      tl.to(light, { x, y, duration: 0.07, ease: "sine.inOut" }, LIT_AT[i] - 0.07);
-    });
-    tl.to(light, { x: 54, y: 46, r: 120, a: 0.15, duration: 0.1, ease: "sine.inOut" }, 0.38); // by 48 %: a gentle warm lift, not a wash
-    tl.to(light, { a: 0, duration: 0.15 }, 0.6);
-    tl.to({}, { duration: 0.25 }, 0.75); // pad the timeline to exactly 1
-    paint();
-
-    const st = ScrollTrigger.create({
-      trigger: el,
-      start: "top bottom",
-      end: "bottom top",
-      onUpdate: (self) => {
-        tl.progress(self.progress);
-        notes.forEach((n, i) => n.classList.toggle("is-lit", self.progress >= LIT_AT[i]));
-      },
-      onRefresh: (self) => {
-        tl.progress(self.progress);
-        notes.forEach((n, i) => n.classList.toggle("is-lit", self.progress >= LIT_AT[i]));
-      },
-    });
-    return () => {
-      st.kill();
-      tl.kill();
-    };
+    if (prefersReducedMotion() || !root.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".shank-text",
+        { y: 40, opacity: 0 },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 1.2, 
+          stagger: 0.1, 
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top 60%",
+          }
+        }
+      );
+      
+      gsap.fromTo(
+        ".shank-img",
+        { scale: 1.05 },
+        {
+          scale: 1,
+          duration: 1.5,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top bottom",
+          }
+        }
+      );
+    }, root);
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={root}
-      id="shank"
-      data-chapter="shank"
-      className="sheet shank"
-      data-record-time={1.2}
-      data-record-hold={1.2}
-      data-record-align="center"
-      data-record-label="The shank"
-    >
-      <header className="shank-head">
-        <p className="ss-meta">
-          <span>{shank.num}</span> The signature
-        </p>
-        <h2 className="shank-title">{shank.title}</h2>
-        <p className="shank-sub">{shank.sub}</p>
-      </header>
+    <section ref={root} id="shank" data-chapter="shank" className="shank-sec" data-record-time={1.2} data-record-label={shank.title}>
+      <style>{`
+        .shank-sec {
+          width: 100vw;
+          min-height: 100vh;
+          background-color: #F8F5EE;
+          color: #2A211B;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          padding: 80px 40px;
+          font-family: var(--font-sans, sans-serif);
+        }
+        
+        .shank-grid {
+          width: 100%;
+          max-width: 1400px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 80px;
+          align-items: center;
+          margin: 0 auto;
+        }
+
+        .shank-col-left {
+          position: relative;
+          border-radius: 24px;
+          overflow: hidden;
+          aspect-ratio: 4 / 5;
+        }
+
+        .shank-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .shank-num {
+          font-family: var(--font-mono, monospace);
+          font-size: 14px;
+          letter-spacing: 0.1em;
+          color: #C89B3C;
+          margin-bottom: 24px;
+        }
+
+        .shank-title {
+          font-family: var(--font-serif, serif);
+          font-size: clamp(48px, 6vw, 80px);
+          line-height: 1.1;
+          margin-bottom: 24px;
+        }
+        
+        .shank-sub {
+          font-size: 18px;
+          line-height: 1.5;
+          opacity: 0.8;
+          margin-bottom: 64px;
+          max-width: 480px;
+        }
+
+        .shank-notes {
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+        }
+
+        .shank-note {
+          display: flex;
+          gap: 24px;
+        }
+
+        .note-n {
+          font-family: var(--font-mono, monospace);
+          font-size: 12px;
+          color: #C89B3C;
+          margin-top: 6px;
+        }
+
+        .note-title {
+          font-family: var(--font-serif, serif);
+          font-size: 24px;
+          margin-bottom: 8px;
+        }
+
+        .note-text {
+          font-size: 14px;
+          opacity: 0.7;
+          line-height: 1.5;
+          max-width: 320px;
+        }
+
+        @media (max-width: 1024px) {
+          .shank-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+          }
+          .shank-col-left {
+            aspect-ratio: 16 / 9;
+          }
+        }
+      `}</style>
 
       <div className="shank-grid">
-        <ol className="shank-notes">
-          {left.map((n) => (
-            <Note key={n.n} note={n} />
-          ))}
-        </ol>
-
-        <figure className="shank-pic" data-cursor="Taste">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={shank.image} alt="Lamb shank on saffron rice with Kashmiri chilli jus" draggable={false} />
-          <div className="shank-light" aria-hidden />
-        </figure>
-
-        <ol className="shank-notes">
-          {right.map((n) => (
-            <Note key={n.n} note={n} />
-          ))}
-        </ol>
+        <div className="shank-col-left shank-img-wrap">
+          <img src={shank.image} alt={shank.title} className="shank-img" />
+        </div>
+        
+        <div className="shank-col-right">
+          <div className="shank-num shank-text">{shank.num}</div>
+          <h2 className="shank-title shank-text">{shank.title}</h2>
+          <p className="shank-sub shank-text">{shank.sub}</p>
+          
+          <div className="shank-notes">
+            {shank.notes.map((note) => (
+              <div key={note.n} className="shank-note shank-text">
+                <div className="note-n">{note.n}</div>
+                <div>
+                  <h3 className="note-title">{note.title}</h3>
+                  <p className="note-text">{note.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
-  );
-}
-
-function Note({ note }: { note: { n: string; title: string; text: string } }) {
-  return (
-    <li className="shank-note is-lit">
-      <span className="shank-n">{note.n}</span>
-      <span className="shank-note-title">{note.title}</span>
-      <span className="shank-note-text">{note.text}</span>
-    </li>
   );
 }

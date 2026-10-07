@@ -107,7 +107,7 @@ export default function CourseRail() {
 
   const cur = chapters[active];
   const old = chapters[prev ?? active];
-  const paper = cur.id === "pairing"; // the bone paper band: bar + rail switch to ink
+  const paper = cur.id === "pairing" || cur.id === "tasting"; // light bg: switch to ink
 
   return (
     <>

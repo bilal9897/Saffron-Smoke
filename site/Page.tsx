@@ -3,7 +3,6 @@ import CourseRail from "./components/CourseRail";
 import HeroPlating from "./components/HeroPlating";
 import TastingJourney from "./components/TastingJourney";
 import TandoorFire from "./components/TandoorFire";
-import ShankDetail from "./components/ShankDetail";
 import PairingSheet from "./components/PairingSheet";
 import ReserveTable from "./components/ReserveTable";
 import FireFooter from "./components/FireFooter";
@@ -24,7 +23,6 @@ export default function Page() {
         <HeroPlating />
         <TastingJourney />
         <TandoorFire />
-        <ShankDetail />
         <PairingSheet />
         <ReserveTable />
       </main>

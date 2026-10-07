@@ -13,7 +13,7 @@ export const chapters = [
   { id: "reserve", num: "VI", label: "Reserve" },
 ] as const;
 
-export const loaderWords = ["Saffron.", "Smoke.", "Fire."];
+export const loaderWords = ["Welcome.", "To our.", "Kitchen."];
 
 /* ── Hero: the plating film. Video seconds measured on a contact sheet (raw/hero-plating.mp4):
  *  rice lands 1.55 · shank lands 3.0 · jus pours 2.75 → 4.7 · garnish 4.75 → 5.9 · smoke from 6.0 */
@@ -42,13 +42,13 @@ export const ticket = {
   ],
 };
 export const hero = {
-  title: ["Cooks as", "you scroll."],
-  kicker: "A menu that",
-  caption: "We cook with fire, not with noise.",
+  title: ["A story told", "in smoke."],
+  kicker: "Welcome to our kitchen.",
+  caption: "We believe in the quiet power of open fire and ingredients that speak for themselves.",
   captionAt: 6.0,
-  priceLine: "Nine courses · one flame",
+  priceLine: "A nine-course journey through the flames",
   price: "₹7,500",
-  cta: "Reserve a table",
+  cta: "Join our table",
 };
 
 /* ── Tasting journey (signature): raw → cooked, pixel-aligned pairs. */
@@ -59,6 +59,8 @@ export const courses = [
     pairing: "Riesling, off-dry",
     raw: `${IMG}/course-1-raw.webp`,
     cooked: `${IMG}/course-1.webp`,
+    thumb: `/images/golgappa_thumb.jpg`,
+    plateImage: `/images/course1_plate.jpg`,
   },
   {
     num: "II",
@@ -66,6 +68,8 @@ export const courses = [
     pairing: "Albariño",
     raw: `${IMG}/course-2-raw.webp`,
     cooked: `${IMG}/course-2.webp`,
+    thumb: `/images/prawn_thumb.jpg`,
+    plateImage: `/images/course2_plate.jpg`,
   },
   {
     num: "III",
@@ -73,13 +77,24 @@ export const courses = [
     pairing: "Grenache rosé",
     raw: `${IMG}/course-3-raw.webp`,
     cooked: `${IMG}/course-3.webp`,
+    thumb: `/images/paneer_thumb.jpg`,
+    plateImage: `/images/course3_plate.jpg`,
+  },
+  {
+    num: "IV",
+    name: "Our signature shank, born from the fire",
+    pairing: "Nebbiolo, bold",
+    raw: `${IMG}/hero-end.webp`,
+    cooked: `${IMG}/hero-end.webp`,
+    thumb: `/images/shank_thumb.jpg`,
+    plateImage: `/images/course4_plate.jpg`,
   },
 ];
 export const tasting = {
-  eyebrow: "The tasting menu",
-  next: { num: "IV", name: "The shank, from the fire" },
-  priceNote: "Nine courses, per guest",
+  eyebrow: "A culinary journey",
+  priceNote: "Nine crafted courses, per guest",
   price: "₹7,500",
+  mainImage: "/images/tasting_main.jpg",
   /** record seconds per course on the pin */
   secsPerCourse: 2.2,
   arrive: 0.8,
@@ -97,10 +112,10 @@ export const fireFilm: Film = {
   ],
 };
 export const fire = {
-  title: ["480° of", "patience."],
-  copy: "One clay tandoor, lit at five every evening and fed babool charcoal until the last table leaves.",
+  title: ["The heart", "of our kitchen."],
+  copy: "At the center of everything we do is a single clay tandoor. We light it every afternoon at five, feeding it with fragrant babool wood, and letting the steady, glowing embers do their magic until the last guest bids us goodnight.",
   stats: [
-    { value: "480 °C", label: "at the coals" },
+    { value: "480 °C", label: "glowing embers" },
     { value: "1", label: "clay oven" },
     { value: "5 pm", label: "lit daily" },
     { value: "14 h", label: "for the shank" },
@@ -110,20 +125,20 @@ export const fire = {
 /* ── Signature dish (FT15). Stand-in still until dish-pushin.mp4 arrives. */
 export const shank = {
   num: "IV",
-  title: "The shank",
-  sub: "Fourteen hours, one flame.",
-  image: `${IMG}/hero-end.webp`,
+  title: "The Signature Shank",
+  sub: "Slow-cooked with fourteen hours of patience and a single, unwavering flame.",
+  image: `/images/ivory_shank.jpg`,
   notes: [
-    { n: "01", title: "Shank, 14 hours", text: "Braised overnight, glazed in the tandoor." },
-    { n: "02", title: "Kashmiri chilli jus", text: "Deep red, gentle heat, finished with ghee." },
-    { n: "03", title: "Saffron rice", text: "Aged basmati, Pampore saffron threads." },
-    { n: "04", title: "Clove smoke", text: "Lit at the pass, under the dome." },
+    { n: "01", title: "Shank, 14 hours", text: "Slow-braised overnight, then carefully caramelized to perfection in the clay oven." },
+    { n: "02", title: "Kashmiri chilli jus", text: "A rich, deep red broth bursting with gentle warmth and the richness of pure ghee." },
+    { n: "03", title: "Saffron rice", text: "Aged long-grain basmati, delicately perfumed with hand-picked Pampore saffron threads." },
+    { n: "04", title: "Clove smoke", text: "Infused with a whisper of clove smoke, unveiled right at your table." },
   ],
 };
 
 /* ── Pairing (MN01) */
 export const pairing = {
-  title: "Poured to match.",
+  title: "Poured with intention.",
   image: `${IMG}/pairing.webp`,
   rows: [
     { dish: "Golgappa", drink: "Riesling" },
@@ -132,15 +147,15 @@ export const pairing = {
     { dish: "Shank", drink: "Nebbiolo" },
   ],
   options: [
-    { name: "Wine pairing", price: "₹4,200" },
+    { name: "Curated wine pairing", price: "₹4,200" },
     { name: "Zero-proof pairing", price: "₹2,400" },
   ],
-  note: "Saffron cordial, clove smoke, lime: our zero-proof pour.",
+  note: "Our signature zero-proof pour brings together bright lime, house-made saffron cordial, and a hint of clove smoke.",
 };
 
 /* ── Reservations (BK05). Picks by itself only in ?record=1; otherwise only on click. */
 export const reserve = {
-  title: ["Hold a", "table."],
+  title: ["Join us", "for dinner."],
   notes: ["Tasting menu only", "2 h 40 min", "₹7,500 per guest"],
   rating: "★ 4.9 from 1,280 diners",
   month: "October 2026",
@@ -155,7 +170,7 @@ export const reserve = {
   times: ["19:00", "19:30", "20:30", "21:15"],
   /** the scripted record-mode booking (and the ?static=1 final state) */
   demo: { day: 17, guests: 4, time: "20:30" },
-  button: "Hold my table",
+  button: "Reserve your seat",
 };
 
 /* ── Footer (FO14) */
